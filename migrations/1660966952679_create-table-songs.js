@@ -1,4 +1,4 @@
-/* eslint-disable linebreak-style */
+/* eslint-disable camelcase */
 
 exports.up = (pgm) => {
   pgm.createTable('songs', {
@@ -14,12 +14,12 @@ exports.up = (pgm) => {
       type: 'INT',
       notNull: true,
     },
-    genre: {
-      type: 'TEXT',
+    performer: {
+      type: 'VARCHAR(50)',
       notNull: true,
     },
-    performer: {
-      type: 'TEXT',
+    genre: {
+      type: 'VARCHAR(50)',
       notNull: true,
     },
     duration: {

@@ -3,7 +3,7 @@ const SongsHandler = require('./handlerSong');
 const routes = require('./routesSong');
 
 module.exports = {
-  name: 'songs',
+  name: 'song',
   version: '1.0.0',
   register: async (server, { service, validator }) => {
     const songhandler = new SongsHandler(service, validator);

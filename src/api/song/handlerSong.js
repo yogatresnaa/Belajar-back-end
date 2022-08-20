@@ -8,14 +8,14 @@ const ClientError = require('../../expections/ClientError');
 
 class SongsHandler {
   constructor(service, validator) {
-    this.service = service;
+    this._service = service;
     this._validator = validator;
 
     this.postSongHandler = this.postSongHandler.bind(this);
-    this.getSongHandler = this.getSongHandler.bind(this);
+    this.getSongsHandler = this.getSongsHandler.bind(this);
     this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
-    this.putSongByIdHandler = this.putSongByIdHanlder.bind(this);
-    this.deleteByIdHandler = this.deleteSongByIdHandler.bind(this);
+    this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
+    this.deleteSongByIdHandler = this.deleteSongByIdHandler.bind(this);
   }
 
   async postSongHandler(request, h) {
@@ -33,7 +33,7 @@ class SongsHandler {
 
       const response = h.response({
         status: 'success',
-        message: 'Lagu berhasil ditambahkan',
+        message: 'Song berhasil ditambahkan',
         data: {
           songId,
         },
@@ -60,7 +60,7 @@ class SongsHandler {
     }
   }
 
-  async getSongHandler() {
+  async getSongsHandler() {
     const song = await this._service.getSong();
     return {
       status: 'success',
@@ -73,7 +73,7 @@ class SongsHandler {
   async getSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      const song = this._service.getSongById(id);
+      const song = await this._service.getSongById(id);
       return {
         status: 'success',
         data: {
@@ -100,14 +100,15 @@ class SongsHandler {
     }
   }
 
-  async putSongByIdHanlder(request, h) {
+  async putSongByIdHandler(request, h) {
     try {
-      this._validator.validateNotePayload(request.payload);
+      this._validator.validateSongPayload(request.payload);
+      const { title, year, genre, performer, duration, albumId } = request.payload;
       const { id } = request.params;
-      await this._service.editSongById(id);
+      await this._service.editSongById(id, { title, year, genre, performer, duration, albumId });
       return {
         status: 'success',
-        message: 'Lagu berhasil diperbarui',
+        message: 'Song berhasil diperbarui',
       };
     } catch (error) {
       if (error instanceof ClientError) {
@@ -131,10 +132,10 @@ class SongsHandler {
   async deleteSongByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      await this.service.deleteSongById(id);
+      await this._service.deleteSongById(id);
       return {
         data: 'success',
-        message: 'lagu Berhasil dihapus',
+        message: 'Lagu Berhasil dihapus',
       };
     } catch (error) {
       if (error instanceof ClientError) {
