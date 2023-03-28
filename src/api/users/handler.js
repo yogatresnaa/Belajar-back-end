@@ -1,7 +1,3 @@
-/* eslint-disable linebreak-style */
-/* eslint-disable consistent-return */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable linebreak-style */
 const ClientError = require('../../expections/ClientError');
 
 class UsersHandler {
@@ -53,7 +49,7 @@ class UsersHandler {
   async getUserByIdHandler(request, h) {
     try {
       const { id } = request.params;
-      const user = await this._service.getUserByIdHandler(id);
+      const user = await this._service.getUserById(id);
 
       return {
         status: 'success',
@@ -70,6 +66,14 @@ class UsersHandler {
         response.code(error.statusCode);
         return response;
       }
+      // server error
+      const response = h.response({
+        status: 'error',
+        message: 'Maaf, terjadi kegagalan pada server kami.',
+      });
+      response.code(500);
+      console.error(error);
+      return response;
     }
   }
 }
