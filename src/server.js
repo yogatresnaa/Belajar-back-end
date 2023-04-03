@@ -15,17 +15,30 @@ const users = require('./api/users');
 const UsersService = require('./services/postgres/UsersService');
 const UserValidator = require('./validator/users');
 
-// authentications
 const authentications = require('./api/authentications');
 const AuthenticationsService = require('./services/postgres/AuthenticationsService');
 const TokenManager = require('./tokenize/tokenManager');
 const AuthenticationsValidator = require('./validator/Authentications');
+
+const playlist = require('./api/playlists');
+const PlaylistsService = require('./services/postgres/PlaylistsService');
+const PlaylistValidator = require('./validator/playlists');
+
+const playlistsong = require('./api/playlistsongs');
+const PlaylistSongService = require('./services/postgres/PlaylistSongService');
+const playlistvalidator = require('./validator/playlists');
+
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
 
 const init = async () => {
   const albumservice = new AlbumsService();
   const songservice = new SongService();
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const plyalistService = new PlaylistsService();
+  const playlistSongsService = new PlaylistSongService();
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -70,7 +83,6 @@ const init = async () => {
     {
       plugin: song,
       options: {
-        // service: songservice,
         songservice,
         validator: SongValidator,
       },
@@ -89,6 +101,31 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: playlist,
+      options: {
+        plyalistService,
+        validator: PlaylistValidator,
+      },
+    },
+    {
+      plugin: playlistsong,
+      options: {
+        playlistSongsService,
+        songservice,
+        plyalistService,
+        validator: playlistvalidator,
+      },
+    },
+
+    {
+      plugin: _exports,
+      options: {
+        service: ProducerService,
+        plyalistService,
+        validator: ExportsValidator,
       },
     },
   ]);
